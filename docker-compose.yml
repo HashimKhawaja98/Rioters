@@ -32,9 +32,6 @@ services:
     image: mysql:latest
     expose:
       - "4407"
-    networks:
-        default:
-            ipv4_address: 172.21.0.5
     volumes: #going to use a named volume for now, if it doesn't work we will manually create volumes in a new folder within the db folder
       - ./db/db-data:/var/lib/mysql/
     environment:
@@ -43,11 +40,5 @@ services:
       MYSQL_USER: test
       MYSQL_PASSWORD: test
 
-networks:
-    default:
-        ipam:
-            config:
-                - subnet: 172.21.0.0/16
-    
 #volumes: #need to list named volumes used by containers on the same level as services
  # db-data:

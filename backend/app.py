@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 
 time.sleep(15)
 
-cnx = mysql.connector.connect(user='test', password='test', host='172.21.0.5', database='Jhin')
+cnx = mysql.connector.connect(user='test', password='test', host='db', database='Jhin')
 logging.info(cnx.is_connected())
 
 mycursor = cnx.cursor()

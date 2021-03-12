@@ -1,5 +1,6 @@
 import pika
 import mysql.connector
+import hashlib
 import os
 import time
 import logging
@@ -24,10 +25,10 @@ for table in mycursor:
 	if(table[0] == "users"):
 		count += 1
 if(count == 0):
-	mycursor.execute("CREATE TABLE users (username VARCHAR(255), password VARCHAR(255))")
+    mycursor.execute("CREATE TABLE users (username VARCHAR(255), password VARCHAR(255))")
+    mycursor.execute("INSERT INTO users (username, password) VALUES ('test', 'password')")
 else:
-	mycursor.execute("INSERT INTO users (username, password) VALUES ('test', 'password')")
-	logging.info(mycursor)
+	logging.info(print("Users table already created!"))
 
 cnx.commit()
 logging.info("Connecting to messaging service...")
@@ -55,5 +56,14 @@ channel.basic_consume(queue='hello world', auto_ack=True,
 # loops forever consuming from 'request' queue
 logging.info("Starting consumption...")
 channel.start_consuming()
+
+#salt = os.random(32) Can be used to add a salt to the hashed password
+#password = 'something'
+#key = hashlib.pbkdf2_hmac(
+#   'sha256', the algorithm you choose for hashing
+#   password.encode('utf-8'), Convert the password to bytes
+#   salt, provide the salt
+#   100000 Recommended to use at least 100000 iterations of sha-256           
+#)
 
 cnx.close()

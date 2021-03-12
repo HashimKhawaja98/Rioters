@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 # repeatedly try to connect to db and messaging, waiting up to 60s, doubling
 # backoff
 
-time.sleep(15)
+time.sleep(30)
 
 cnx = mysql.connector.connect(user='test', password='test', host='db', database='Jhin')
 logging.info(cnx.is_connected())

@@ -27,7 +27,9 @@ services:
       build: ./backend
       environment:
         - RABBITMQ_DEFAULT_USER=${USER}
-        - RABBITMQ_DEFAULT_PASS=${PASS}   
+        - RABBITMQ_DEFAULT_PASS=${PASS}
+      depends_on:
+        - "db"   
   db:
     image: mysql:latest
     expose:

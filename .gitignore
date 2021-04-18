@@ -1,2 +1,7 @@
 .DS_Store
+<<<<<<< HEAD
 frontend/__pycache__/messaging.cpython-39.pyc
+=======
+frontend/__pycache__/messaging.cpython-39.pyc
+.vscode
+>>>>>>> 3eda3c04a1b8e61054a15825ed2eed87378742f6

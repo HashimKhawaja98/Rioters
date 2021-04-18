@@ -1,0 +1,18 @@
+- bash
+- "-c"
+- |
+  DBNAME="Jhin"
+  DBEXISTS=$(mysql --batch --skip-column-names -e "SHOW DATABASES LIKE '"$DBNAME"';" | grep "$DBNAME" > /dev/null; echo "$?")
+  if [ $DBEXISTS -eq 0 ];then
+    echo "A database with the name $DBNAME already exists."
+  else
+    echo " database $DBNAME does not exist."
+  # Create a user for replication operations and initialize our
+  # example database
+    mysql --user=test --pasword=test 
+    CREATE DATABASE Jhin;
+    CREATE TABLE users(
+      email VARCHAR(255) PRIMARY KEY,
+      hash VARCHAR(255) NOT NULL);
+  fi
+  

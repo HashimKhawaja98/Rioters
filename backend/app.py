@@ -4,7 +4,11 @@ import mysql.connector
 import hashlib
 =======
 import logging
+<<<<<<< HEAD
 >>>>>>> 3eda3c04a1b8e61054a15825ed2eed87378742f6
+=======
+>>>>>>> 9cfb593606030bd49ea2d088f54082475ee23e36
+>>>>>>> 40184c2d827d6ba005a2074d1d4b47b4baf9403e
 import os
 import time
 
@@ -127,4 +131,8 @@ channel.start_consuming()
 cnx.close()
 =======
 cnx.close()
+<<<<<<< HEAD
 >>>>>>> 3eda3c04a1b8e61054a15825ed2eed87378742f6
+=======
+>>>>>>> 9cfb593606030bd49ea2d088f54082475ee23e36
+>>>>>>> 40184c2d827d6ba005a2074d1d4b47b4baf9403e

@@ -1,5 +1,5 @@
 #Our implementation takes the example from the official kubernets docs and changes a few params to fit our project
-# 
+# https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/
 # Headless service for stable DNS entries of StatefulSet members.
 apiVersion: v1
 kind: Service
@@ -46,6 +46,16 @@ data:
     #Apply this config on the replicas
     [mysqld]
     super-read-only
+  # init_db.sh: |
+  #   #!/bin/bash
+  #   query1=CREATE DATABASE Jhin;
+  #   mysql -e $query1;
+  # create_user.sh: |
+  #   #!/bin/bash
+  #   query2=GRANT ALL PRIVILEGES ON Jhin.* TO 'test'@'localhost' IDENTIFIED BY 'test';
+  #   mysql -e "$query2";
+  #   mysql -e "flush privileges"
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -81,7 +91,14 @@ spec:
             cp /mnt/config-map/primary.cnf /mnt/conf.d/
           else
             cp /mnt/config-map/replica.cnf /mnt/conf.d/
+<<<<<<< HEAD
           fi        
+=======
+          fi
+          # /mnt/config-map/init_db.sh 
+          # /mnt/config-map/create_user.sh
+               
+>>>>>>> 1b9ebc8be755ddee6ab9ccdd89827976f71de814
         volumeMounts:
         - name: conf
           mountPath: /mnt/conf.d
@@ -104,18 +121,26 @@ spec:
           ncat --recv-only mysql-$(($ordinal-1)).mysql 3307 | xbstream -x -C /var/lib/mysql
           # Prepare the backup.
           xtrabackup --prepare --target-dir=/var/lib/mysql          
+      
         volumeMounts:
         - name: data
           mountPath: /var/lib/mysql
           subPath: mysql
         - name: conf
           mountPath: /etc/mysql/conf.d
+        # - name: config-map
+        #   mountPath: /etc/initDB
+        #   readOnly: True
       containers:
       - name: mysql
         image: mysql:5.7
         env:
-        - name: MYSQL_ALLOW_EMPTY_PASSWORD
-          value: "1"
+        - name: MYSQL_ROOT_PASSWORD
+          value: test
+        - name: MYSQL_USER
+          value: test
+        - name: MYSQL_PASSWORD
+          value: test
         ports:
         - name: mysql
           containerPort: 3306
@@ -125,6 +150,9 @@ spec:
           subPath: mysql
         - name: conf
           mountPath: /etc/mysql/conf.d
+        # - name: config-map
+        #   mountPath: /etc/initDB
+        #   readOnly: True
         resources:
           requests:
             cpu: 500m
@@ -138,7 +166,7 @@ spec:
         readinessProbe:
           exec:
             # Check we can execute queries over TCP (skip-networking is off).
-            command: ["mysql", "-h", "127.0.0.1", "-e", "SELECT 1"]
+            command: ["mysql", "-h", "127.0.0.1","-u","test","-ptest", "-e", "SELECT 1"]
           initialDelaySeconds: 5
           periodSeconds: 2
           timeoutSeconds: 1
@@ -170,13 +198,18 @@ spec:
           # Check if we need to complete a clone by starting replication.
           if [[ -f change_master_to.sql.in ]]; then
             echo "Waiting for mysqld to be ready (accepting connections)"
+<<<<<<< HEAD
             until mysql -h 127.0.0.1 -e "SELECT 1"; do sleep 1; done
+=======
+            until mysql -h 127.0.0.1 -u test -ptest -e "SELECT 1"; do sleep 1; done
+
+>>>>>>> 1b9ebc8be755ddee6ab9ccdd89827976f71de814
             echo "Initializing replication from clone position"
             mysql -h 127.0.0.1 \
                   -e "$(<change_master_to.sql.in), \
                           MASTER_HOST='mysql-0.mysql', \
-                          MASTER_USER='root', \
-                          MASTER_PASSWORD='', \
+                          MASTER_USER='test', \
+                          MASTER_PASSWORD='test', \
                           MASTER_CONNECT_RETRY=10; \
                         START SLAVE;" || exit 1
             # In case of container restart, attempt this at-most-once.
@@ -184,7 +217,7 @@ spec:
           fi
           # Start a server to send backups when requested by peers.
           exec ncat --listen --keep-open --send-only --max-conns=1 3307 -c \
-            "xtrabackup --backup --slave-info --stream=xbstream --host=127.0.0.1 --user=root"          
+            "xtrabackup --backup --slave-info --stream=xbstream --host=127.0.0.1 --user=test --password=test"          
         volumeMounts:
         - name: data
           mountPath: /var/lib/mysql
